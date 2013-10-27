@@ -1032,6 +1032,7 @@ class TheCartPress {
 		$products = wp_count_posts( 'tcp_product' );
 		if ( $products->publish + $products->draft == 0 ) {
 			require_once( ABSPATH . 'wp-admin/includes/taxonomy.php' );
+			if ( $taxonomy_def = tcp_get_custom_taxonomy( TCP_PRODUCT_CATEGORY ) ) register_taxonomy( TCP_PRODUCT_CATEGORY, TCP_PRODUCT_POST_TYPE, $taxonomy_def );
 			$args = array(
 				'cat_name'				=> __( 'Category One', 'tcp' ),
 				'category_description'	=> __( 'Category One for Product One', 'tcp' ),
@@ -1055,13 +1056,7 @@ class TheCartPress {
 			add_post_meta( $post_id, 'tcp_order', 10 );
 			add_post_meta( $post_id, 'tcp_sku', 'SKU_ONE' );
 			add_post_meta( $post_id, 'tcp_stock', -1 ); //No stock
-			$term_id = term_exists( 'Category One', 'tcp_product_category' );
-			if ( $term_id == 0 ) {
-				$term = wp_insert_term( __( 'Category One', 'tcp' ), 'tcp_product_category' );
-				if ( ! is_wp_error( $term ) ) wp_set_object_terms( $post_id, (int)$term['term_id'], 'tcp_product_category' );
-			} else {
-				wp_set_object_terms( $post_id, (int)$term_id, 'tcp_product_category' );
-			}
+			if ( $category_id ) wp_set_object_terms( $post_id, $category_id, TCP_PRODUCT_CATEGORY );
 		}
 	}
 
@@ -1254,9 +1249,13 @@ if ( defined( 'THECARTPRESS_LATE_LOAD' ) ) {
 	$GLOBALS['thecartpress'] = &thecartpress();
 }
 
+<<<<<<< HEAD
 add_action('activated_plugin','save_error');
 function save_error(){
 	update_option( 'tcp-error', ob_get_contents() );
 }
 
 } // class_exists check
+=======
+} // class_exists check
+>>>>>>> Fix to register taxonomy for sample category & associate with sample product in createExampleData().
