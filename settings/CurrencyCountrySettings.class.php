@@ -118,7 +118,7 @@ $shipping_isos			= $thecartpress->get_setting( 'shipping_isos', array() ); ?>
 		</select>
 		</p>
 		<label for="currency_layouts"><?php _e( 'Custom layout', 'tcp' ); ?>:</label>
-		<input type="text" id="currency_layout" name="currency_layout" value="<?php echo stripslashes( $currency_layout ); ?>" size="20" maxlength="25" />
+		<input type="text" id="currency_layout" name="currency_layout" value="<?php echo htmlspecialchars( $currency_layout ); ?>" size="50" maxlength="255" />
 		<p class="description"><?php _e( '%1$s -> Currency; %2$s -> Amount; %3$s -> ISO Code. By default, use %1$s%2$s (%3$s) -> $100 (USD).', 'tcp' ); ?></p>
 		<p class="description"><?php _e( 'For Example: For Euro use %2$s %1$s -> 100&euro;.', 'tcp' ); ?></p>
 		<p class="description"><?php _e( 'If this value is left to blank, then TheCartPress will take this layout from the languages configuration files (mo files), looking for the literal "%1$s%2$s (%3$s)."', 'tcp' ); ?></p>
@@ -339,7 +339,7 @@ $shipping_isos			= $thecartpress->get_setting( 'shipping_isos', array() ); ?>
 		check_admin_referer( 'tcp_currency_settings' );
 		$settings = get_option( 'tcp_settings' );
 		$settings['currency']				= isset( $_POST['currency'] ) ? $_POST['currency'] : 'EUR';		
-		$settings['currency_layout']		= isset( $_POST['currency_layout'] ) ? $_POST['currency_layout'] : '%1$s%2$s (%3$s)';
+		$settings['currency_layout']		= isset( $_POST['currency_layout'] ) ? stripslashes( $_POST['currency_layout'] ) : '%1$s%2$s (%3$s)';
 		$settings['decimal_currency']		= (int)isset( $_POST['decimal_currency'] ) ? $_POST['decimal_currency'] : 2;
 		$settings['decimal_point']			= isset( $_POST['decimal_point'] ) ? $_POST['decimal_point'] : '.';
 		$settings['thousands_separator']	= isset( $_POST['thousands_separator'] ) ? $_POST['thousands_separator'] : ',';
