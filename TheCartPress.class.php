@@ -1249,13 +1249,9 @@ if ( defined( 'THECARTPRESS_LATE_LOAD' ) ) {
 	$GLOBALS['thecartpress'] = &thecartpress();
 }
 
-<<<<<<< HEAD
 add_action('activated_plugin','save_error');
 function save_error(){
 	update_option( 'tcp-error', ob_get_contents() );
 }
 
 } // class_exists check
-=======
-} // class_exists check
->>>>>>> Fix to register taxonomy for sample category & associate with sample product in createExampleData().
