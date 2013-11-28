@@ -50,7 +50,7 @@ class ShoppingCart {
 		$shopping_cart_id = $post_id . '_' . $option_1_id . '_' . $option_2_id;
 		$shopping_cart_id = sanitize_key( apply_filters( 'tcp_shopping_cart_key', $shopping_cart_id ) );
 		if ( isset( $this->shopping_cart_items[$shopping_cart_id] ) ) {
-			$sci = $this->shopping_cart_items[$shopping_cart_id];
+			$sci = clone $this->shopping_cart_items[$shopping_cart_id];
 			$sci->add( $count );
 		} else {
 			$sci = new ShoppingCartItem( $post_id, $option_1_id, $option_2_id, $count, $unit_price, $unit_weight );
@@ -69,9 +69,10 @@ class ShoppingCart {
 		$sci = false;
 		if ( isset( $this->shopping_cart_items[$shopping_cart_id] ) ) {
 			if ( $count > 0 ) {
-				$sci = $this->shopping_cart_items[$shopping_cart_id];
+				$sci = clone $this->shopping_cart_items[$shopping_cart_id];
 				$sci->setUnits( $count );
 				$sci = apply_filters( 'tcp_modify_to_shopping_cart', $sci );
+				if ( is_wp_error( $sci ) ) return $sci;
 				if ( $sci ) $this->shopping_cart_items[$shopping_cart_id] = $sci;
 			} else {
 				$this->delete( $post_id, $option_1_id , $option_2_id );

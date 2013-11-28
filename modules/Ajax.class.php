@@ -410,8 +410,18 @@ jQuery(document).on( 'click', '.tcp_add_to_shopping_cart', function( event ) {
 	feedback.show();
 
 	jQuery.getJSON( "<?php echo admin_url( 'admin-ajax.php' ); ?>", data ).done( function( response ) {
+		var div = jQuery( '#tcp_add_to_shopping_cart_' + post_id ).parents( '.tcp-add-to-cart' );
 		feedback.hide();
 		tcpDispatcher.fire( post_id );
+		if ( div.length ) {
+			if ( response && response.error ) {
+				if ( jQuery( 'div.tcp_add_error', div ).html( response.error ).length === 0 ) {
+					div.append( '<div class="tcp_add_error">' + response.error + '</div>' );
+				}
+			} else {
+				jQuery( 'div.tcp_add_error', div ).html( '' );
+			}
+		}
 	} ).fail( function (error ) {
 		feedback.hide();
 		tcpDispatcher.fire( post_id );
@@ -494,7 +504,18 @@ jQuery(document).on('click', '.tcp_modify_item_shopping_cart', function(event) {
 		data
 	).done( function( response ) {
 		feedback.hide();
-		tcpDispatcher.fire( 0 );
+		if ( response && response.error ) {
+			if ( jQuery( 'span.tcp_modify_error', form ).html( response.error ).length === 0 ) {
+				form.append( '<span class="tcp_modify_error">' + response.error + '</span>' );
+			}
+			var tcp_count = jQuery( '.tcp_count', form );
+			if ( tcp_count.length ) {
+				tcp_count.val( tcp_count.prop( 'defaultValue' ) );
+			}
+		} else {
+			jQuery( 'span.tcp_modify_error', form ).html( '' );
+			tcpDispatcher.fire( 0 );
+		}
 	} ).fail( function( response ) {
 		feedback.hide();
 	} );

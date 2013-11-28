@@ -86,9 +86,9 @@ class TCPShoppingCartPage {
 	</div><!-- #shopping_cart -->
 	<?php } ?>
 	<?php do_action( 'tcp_shopping_cart_footer' ); ?>
-</div><!-- .tcp_shopping_cart_page.tcpf -->
-<?php do_action( 'tcp_shopping_cart_after' );
-		return ob_get_clean();
+<?php do_action( 'tcp_shopping_cart_after' ); ?>
+</div>
+<?php return ob_get_clean();
 	}
 
 	static function show_button() {

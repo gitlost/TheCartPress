@@ -406,8 +406,23 @@ class TheCartPress {
 					////$unit_weight	= tcp_get_the_weight( $post_id ) + $weight_1 + $weight_2;
 					$args = compact( 'i', 'post_id', 'count', 'unit_price', 'unit_weight' );
 					$args = apply_filters( 'tcp_add_item_shopping_cart', $args );
-					extract( $args );
-					$item = $shoppingCart->add( $post_id, $option_1_id, $option_2_id, $count, $unit_price, $unit_weight );
+					if ( is_wp_error( $args ) ) {
+						if ( $this->get_setting( 'activate_ajax', false ) ) {
+							die( json_encode( array( 'error' => $args->get_error_message(), 'post_id' => $post_id, 'option_1_id' => $option_1_id, 'option_2_id' => $option_2_id, 'count' => $count ) ) );
+						} else {
+							add_action( 'tcp_the_add_to_cart_items_in_the_cart', function ( $out ) use ( $args ) { return $out . '<div class="tcp_add_error">' . $args->get_error_message() . '</div>'; } );
+						}
+					} else {
+						extract( $args );
+						$item = $shoppingCart->add( $post_id, $option_1_id, $option_2_id, $count, $unit_price, $unit_weight );
+						if ( is_wp_error( $item ) ) {
+							if ( $this->get_setting( 'activate_ajax', false ) ) {
+								die( json_encode( array( 'error' => $item->get_error_message(), 'post_id' => $post_id, 'option_1_id' => $option_1_id, 'option_2_id' => $option_2_id, 'count' => $count ) ) );
+							} else {
+								add_action( 'tcp_the_add_to_cart_items_in_the_cart', function ( $out ) use ( $item ) { return $out . '<div class="tcp_add_error">' . $item->get_error_message() . '</div>'; } );
+							}
+						}
+					}
 				}
 			}
 			do_action( 'tcp_add_shopping_cart', $_REQUEST['tcp_post_id'] );
@@ -433,7 +448,14 @@ class TheCartPress {
 				$option_2_id = isset( $_REQUEST['tcp_option_2_id'] ) ? $_REQUEST['tcp_option_2_id'] : 0;
 				$count = isset( $_REQUEST['tcp_count'] ) ? (int)$_REQUEST['tcp_count'] : 0;
 				$shoppingCart = TheCartPress::getShoppingCart();
-				$shoppingCart->modify( $post_id, $option_1_id, $option_2_id, $count );
+				$item = $shoppingCart->modify( $post_id, $option_1_id, $option_2_id, $count );
+				if ( is_wp_error( $item ) ) {
+					if ( $this->get_setting( 'activate_ajax', false ) ) {
+						die( json_encode( array( 'error' => $item->get_error_message(), 'post_id' => $post_id, 'option_1_id' => $option_1_id, 'option_2_id' => $option_2_id, 'count' => $count ) ) );
+					} else {
+						add_action( 'tcp_shopping_cart_page_units', function ( $out, $order_detail ) use ( $item, $post_id ) { return $order_detail->get_post_id() == $post_id ? $out . '<div class="tcp_add_error">' . $item->get_error_message() . '</div>' : $out; }, 10, 2 );
+					}
+				}
 				do_action( 'tcp_modify_shopping_cart', $post_id );
 			}
 		}
